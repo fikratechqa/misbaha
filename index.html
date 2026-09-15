@@ -1,0 +1,1428 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مزاد المسابيح</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#23201B; --stone:#6B675E; --line:#E3DFD6; --surface:#FBFAF7;
+  --panel:#FFFFFF; --bead:#B4701A; --bead-soft:#F3E6D2; --jade:#2F6B4F; --clay:#9B4A2F;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--surface); color:var(--ink);
+  font-family:"IBM Plex Sans Arabic",-apple-system,"SF Arabic","Geeza Pro",system-ui,sans-serif;
+  font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+.num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+a{color:inherit;text-decoration:none}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--bead);outline-offset:2px}
+
+/* التخطيط */
+.shell{display:flex;max-width:1400px;margin:0 auto;min-height:100dvh}
+.side{width:224px;flex-shrink:0;border-inline-start:1px solid var(--line);
+  background:var(--panel);padding:24px 16px;position:sticky;top:0;height:100dvh}
+.side h1{font-size:15px;font-weight:600;padding:0 8px}
+.side p{font-size:12px;color:var(--stone);padding:0 8px;margin-top:2px}
+.nav{margin-top:26px;display:flex;flex-direction:column;gap:2px}
+.nav a{display:block;padding:8px 12px;border-radius:5px;font-size:14px;color:var(--stone)}
+.nav a:hover{color:var(--ink)}
+.nav a.on{background:rgba(243,230,210,.6);color:var(--ink);font-weight:500}
+main{flex:1;min-width:0;padding:28px 32px 60px}
+.bottom{display:none}
+@media(max-width:820px){
+  .side{display:none}
+  main{padding:20px 16px 80px}
+  .bottom{display:flex;position:sticky;bottom:0;background:var(--panel);
+    border-top:1px solid var(--line);overflow-x:auto}
+  .bottom a{flex:1;text-align:center;padding:12px 14px;font-size:13px;color:var(--stone);white-space:nowrap}
+  .bottom a.on{color:var(--bead);font-weight:500}
+}
+
+/* عناصر */
+h2.page{font-size:24px;font-weight:600;margin-bottom:18px}
+h3{font-size:16px;font-weight:600;margin-bottom:8px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px}
+.list{list-style:none}
+.list li+li{border-top:1px solid var(--line)}
+.list a,.list .cell{display:block;padding:13px 16px}
+.list a:hover{background:rgba(243,230,210,.25)}
+.muted{color:var(--stone);font-size:13px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:1fr 1fr}
+.g5{grid-template-columns:repeat(5,1fr)}
+@media(max-width:820px){.g5{grid-template-columns:1fr 1fr}}
+.stat{padding:14px 16px}
+.stat b{display:block;font-size:24px;font-weight:600;margin-top:4px}
+.empty{border:1px dashed var(--line);border-radius:6px;padding:38px 20px;
+  text-align:center;color:var(--stone);background:rgba(255,255,255,.6)}
+
+button.btn{height:44px;padding:0 20px;border:0;border-radius:5px;background:var(--bead);
+  color:#fff;font-size:15px;font-weight:500;cursor:pointer}
+button.btn:hover{background:#9C6016}
+button.btn[disabled]{opacity:.5;cursor:not-allowed}
+button.quiet{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+button.quiet:hover{background:var(--panel);border-color:rgba(107,103,94,.4)}
+button.danger{background:var(--clay)}
+button.danger:hover{background:#853F27}
+button.link{background:none;border:0;color:var(--stone);cursor:pointer;font-size:13px;padding:0}
+button.link:hover{color:var(--clay)}
+
+label{display:block;font-size:13px;font-weight:500;color:var(--stone);margin-bottom:6px}
+input,textarea{width:100%;background:var(--panel);border:1px solid var(--line);
+  border-radius:5px;padding:0 12px;height:44px;font-size:15px}
+textarea{height:auto;padding:10px 12px;line-height:1.7;resize:vertical}
+input:hover,textarea:hover{border-color:rgba(107,103,94,.35)}
+input[dir=ltr]{text-align:start}
+.field{margin-bottom:16px}
+.hint{font-size:13px;color:var(--stone);margin-top:6px}
+
+.badge{display:inline-block;border-radius:4px;padding:2px 8px;font-size:12px;font-weight:500}
+.b-in{background:var(--bead-soft);color:var(--ink)}
+.b-sold{background:rgba(47,107,79,.12);color:var(--jade)}
+.b-ret{background:rgba(155,74,47,.12);color:var(--clay)}
+
+.notice{border:1px solid var(--line);background:var(--panel);border-radius:5px;
+  padding:12px 16px;font-size:14px;line-height:1.7}
+.notice.warn{background:rgba(243,230,210,.5);border-color:rgba(180,112,26,.35)}
+.notice.err{background:rgba(155,74,47,.06);border-color:rgba(155,74,47,.35)}
+
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto;margin-bottom:18px}
+.tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:10px 12px;
+  font-size:14px;color:var(--stone);cursor:pointer;white-space:nowrap;margin-bottom:-1px}
+.tabs button.on{border-bottom-color:var(--bead);color:var(--ink);font-weight:500}
+
+dl.info{padding:0 16px}
+dl.info>div{display:flex;gap:16px;padding:11px 0;border-bottom:1px solid var(--line)}
+dl.info>div:last-child{border-bottom:0}
+dl.info dt{width:112px;flex-shrink:0;color:var(--stone);font-size:14px}
+
+.thumb{width:56px;height:56px;border-radius:5px;object-fit:cover;background:var(--bead-soft);flex-shrink:0}
+.photo{width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;border:1px solid var(--line);background:var(--bead-soft)}
+.pick{width:100%;height:128px;border:1px dashed var(--line);border-radius:6px;background:var(--panel);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:0}
+.pick:hover{border-color:var(--bead)}
+.pick img{width:100%;height:100%;object-fit:cover}
+
+.timeline{list-style:none;border-inline-start:2px solid var(--line);padding-inline-start:20px}
+.timeline li{position:relative;padding:12px 0}
+.timeline li::before{content:"";position:absolute;inset-inline-start:-25px;top:19px;
+  width:10px;height:10px;border-radius:50%;background:var(--bead)}
+
+.spin{width:18px;height:18px;border:2px solid var(--bead);border-top-color:transparent;
+  border-radius:50%;animation:sp .7s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+.boot{max-width:560px;margin:80px auto;padding:0 20px}
+</style>
+</head>
+<body>
+<div id="root"><div class="boot"><span class="spin"></span></div></div>
+
+<script>
+'use strict';
+
+/* ============================================================
+   نظام مزاد المسابيح — ملف واحد، بلا خادم وبلا اتصال.
+   البيانات في IndexedDB داخل هذا المتصفح على هذا الجهاز.
+   ============================================================ */
+
+/* ---------- أدوات ---------- */
+
+const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => (
+  { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+));
+
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+
+const pad = (n) => String(n).padStart(2, '0');
+
+function fmtDate(ms) {
+  if (!ms) return '—';
+  const d = new Date(ms);
+  return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear();
+}
+function fmtDateTime(ms) {
+  if (!ms) return '—';
+  const d = new Date(ms);
+  return fmtDate(ms) + ' · ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+const fmtWeight = (g) => (g == null ? '—' : g.toFixed(2) + ' غرام');
+const fmtBeads = (a, b) => (a == null || b == null ? '—' : a + ' × ' + b + ' مم');
+const fmtPrice = (p) => (p == null ? '—' : p.toFixed(2) + ' ر.ق');
+const dateInput = (ms) => {
+  const d = new Date(ms);
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+};
+const fromDateInput = (v) => new Date(v + 'T12:00:00').getTime();
+
+/* تطبيع عربي: البحث عن "احمد" يجد "أحمد" */
+function norm(text) {
+  return String(text || '').trim().toLowerCase()
+    .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g, '')
+    .replace(/\u0640/g, '')
+    .replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ؤ/g, 'و')
+    .replace(/ئ/g, 'ي').replace(/ة/g, 'ه')
+    .replace(/\s+/g, ' ');
+}
+/** يحوّل الأرقام العربية والفارسية إلى إنجليزية ويُبقي بقية المحارف */
+function toLatin(text) {
+  const ar = '٠١٢٣٤٥٦٧٨٩', fa = '۰۱۲۳۴۵۶۷۸۹';
+  return String(text || '').replace(/[٠-٩۰-۹]/g, (c) => {
+    const i = ar.indexOf(c);
+    return String(i >= 0 ? i : fa.indexOf(c));
+  });
+}
+function digits(text) {
+  return toLatin(text).replace(/\D/g, '');
+}
+
+/**
+ * تنقية الحقول الرقمية: الحروف لا تُقبل أصلًا، والأرقام العربية
+ * تُحوَّل تلقائيًا، والفاصلة العشرية واحدة لا أكثر.
+ */
+function cleanNumeric(value, kind) {
+  let t = toLatin(value);
+  if (kind === 'tel') {
+    const plus = t.trimStart().startsWith('+');
+    return (plus ? '+' : '') + t.replace(/\D/g, '');
+  }
+  if (kind === 'numeric') return t.replace(/\D/g, '');
+  t = t.replace(/[^\d.]/g, '');
+  const dot = t.indexOf('.');
+  if (dot !== -1) t = t.slice(0, dot + 1) + t.slice(dot + 1).replace(/\./g, '');
+  return t;
+}
+function tokens(c) {
+  const words = [c.name, c.nickname, String(c.username || '').replace(/^@/, '')]
+    .flatMap((v) => norm(v).split(' ')).filter(Boolean);
+  const phone = digits(c.phone);
+  return [...new Set([...words, ...(phone ? [phone, phone.slice(-4)] : [])])];
+}
+
+/* ---------- قاعدة البيانات ---------- */
+
+const STORES = ['clients', 'items', 'deliveries', 'sales', 'returns', 'activity', 'images', 'meta'];
+let _db = null;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    if (!window.indexedDB) return reject(new Error('no-idb'));
+    let req;
+    try { req = indexedDB.open('misbaha', 1); } catch (e) { return reject(e); }
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      STORES.forEach((s) => {
+        if (!db.objectStoreNames.contains(s)) {
+          db.createObjectStore(s, { keyPath: s === 'meta' ? 'key' : 'id' });
+        }
+      });
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error || new Error('idb-error'));
+    req.onblocked = () => reject(new Error('idb-blocked'));
+    setTimeout(() => reject(new Error('idb-timeout')), 8000);
+  });
+}
+
+function op(store, mode, run) {
+  return new Promise((resolve, reject) => {
+    const t = _db.transaction(store, mode);
+    const r = run(t.objectStore(store));
+    r.onsuccess = () => resolve(r.result);
+    r.onerror = () => reject(r.error);
+  });
+}
+const all = (s) => op(s, 'readonly', (o) => o.getAll());
+// المفتاح الفارغ يحدث في قطع المتجر (لا عميل لها)، وقراءته ترمي خطأ في المتصفح
+const one = (s, id) => (id ? op(s, 'readonly', (o) => o.get(id)) : Promise.resolve(undefined));
+const save = (s, v) => op(s, 'readwrite', (o) => o.put(v));
+const del = (s, id) => op(s, 'readwrite', (o) => o.delete(id));
+const wipe = (s) => op(s, 'readwrite', (o) => o.clear());
+
+/* ترقيم القطع: يبدأ من 1001، ورقم المحذوفة يعود للاستخدام */
+const FIRST = 1001;
+async function counter() {
+  return (await one('meta', 'itemNumber')) || { key: 'itemNumber', last: FIRST - 1, released: [] };
+}
+async function nextNumber() {
+  const c = await counter();
+  if (c.released.length) {
+    c.released.sort((a, b) => a - b);
+    const n = c.released.shift();
+    await save('meta', c);
+    return n;
+  }
+  c.last += 1;
+  await save('meta', c);
+  return c.last;
+}
+async function releaseNumber(n) {
+  const c = await counter();
+  if (!c.released.includes(n)) c.released.push(n);
+  await save('meta', c);
+}
+
+/* ---------- الصور ---------- */
+
+const FULL = 1400, THUMB = 320;
+
+function readImage(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('img')); };
+    img.src = url;
+  });
+}
+function shrink(img, max, q) {
+  const scale = Math.min(1, max / Math.max(img.width, img.height));
+  const cv = document.createElement('canvas');
+  cv.width = Math.round(img.width * scale);
+  cv.height = Math.round(img.height * scale);
+  cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+  return new Promise((res, rej) => cv.toBlob((b) => (b ? res(b) : rej(new Error('blob'))), 'image/jpeg', q));
+}
+async function storeImage(file) {
+  const img = await readImage(file);
+  const [full, thumb] = await Promise.all([shrink(img, FULL, 0.82), shrink(img, THUMB, 0.7)]);
+  const id = uid();
+  await save('images', { id, full, thumb, createdAt: Date.now() });
+  return id;
+}
+const urlCache = new Map();
+async function imgURL(id, size) {
+  const key = id + ':' + size;
+  if (urlCache.has(key)) return urlCache.get(key);
+  const rec = await one('images', id);
+  if (!rec) return null;
+  const url = URL.createObjectURL(size === 'full' ? rec.full : rec.thumb);
+  urlCache.set(key, url);
+  return url;
+}
+
+/* ---------- سجل العمليات ---------- */
+
+const ACTIONS = {
+  'client.create': 'إضافة عميل', 'client.update': 'تعديل عميل',
+  'item.create': 'تسجيل قطعة', 'item.update': 'تعديل قطعة', 'item.delete': 'حذف قطعة',
+  'sale.create': 'تسجيل بيع', 'return.create': 'تسجيل استرجاع',
+  'backup.export': 'تصدير نسخة', 'backup.import': 'استيراد نسخة',
+};
+const logIt = (action, label) =>
+  save('activity', { id: uid(), action, targetLabel: label || '', timestamp: Date.now() });
+
+/* ---------- عمليات العملاء والقطع ---------- */
+
+function clientFields(f) {
+  const c = {
+    name: f.name.trim(), nickname: f.nickname.trim(),
+    username: f.username.trim().replace(/^@/, ''), phone: f.phone.trim(), notes: f.notes,
+  };
+  return { ...c, nameNorm: norm(c.name), searchTokens: tokens(c) };
+}
+
+async function findClients(term) {
+  const value = String(term || '').trim();
+  if (!value) return [];
+  const rows = await all('clients');
+  const n = norm(value.replace(/^@/, ''));
+  const d = digits(value);
+  return rows.filter((c) => {
+    if (d.length >= 3 && digits(c.phone).includes(d)) return true;
+    if (!n) return false;
+    return (c.searchTokens || []).some((t) => t.startsWith(n) || t === n);
+  });
+}
+
+async function removeItem(id) {
+  const item = await one('items', id);
+  if (!item) return;
+  for (const img of item.imageIds || []) { await del('images', img); }
+  const [ds, ss, rs] = await Promise.all([all('deliveries'), all('sales'), all('returns')]);
+  for (const r of ds.filter((x) => x.itemId === id)) await del('deliveries', r.id);
+  for (const r of ss.filter((x) => x.itemId === id)) await del('sales', r.id);
+  for (const r of rs.filter((x) => x.itemId === id)) await del('returns', r.id);
+  await del('items', id);
+  await releaseNumber(item.itemNumber);
+  await logIt('item.delete', '#' + item.itemNumber);
+}
+
+/* ---------- النسخة الاحتياطية ---------- */
+
+const toB64 = (blob) => new Promise((res, rej) => {
+  const r = new FileReader();
+  r.onload = () => res(String(r.result).split(',')[1] || '');
+  r.onerror = () => rej(r.error);
+  r.readAsDataURL(blob);
+});
+function fromB64(data) {
+  const bin = atob(data);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new Blob([bytes], { type: 'image/jpeg' });
+}
+
+async function exportAll() {
+  const payload = { version: 1, exportedAt: Date.now() };
+  for (const s of STORES) { if (s !== 'images') payload[s] = await all(s); }
+  const imgs = await all('images');
+  payload.images = [];
+  for (const im of imgs) {
+    payload.images.push({
+      id: im.id, createdAt: im.createdAt,
+      full: await toB64(im.full), thumb: await toB64(im.thumb),
+    });
+  }
+  const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'misbaha-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  await logIt('backup.export', '');
+}
+
+async function importAll(file) {
+  const payload = JSON.parse(await file.text());
+  for (const s of STORES) await wipe(s);
+  for (const s of STORES) {
+    if (s === 'images') continue;
+    for (const row of payload[s] || []) await save(s, row);
+  }
+  for (const im of payload.images || []) {
+    await save('images', {
+      id: im.id, createdAt: im.createdAt,
+      full: fromB64(im.full), thumb: fromB64(im.thumb),
+    });
+  }
+  urlCache.clear();
+  await logIt('backup.import', file.name);
+}
+
+/* ============================================================
+   الواجهة
+   ============================================================ */
+
+const root = document.getElementById('root');
+const NAV = [
+  ['', 'الرئيسية'], ['search', 'البحث'], ['clients', 'العملاء'],
+  ['items', 'القطع'], ['activity', 'سجل العمليات'], ['backup', 'النسخة الاحتياطية'],
+];
+
+function shell(active, body) {
+  const links = (cls) => NAV.map(([h, t]) =>
+    '<a class="' + (active === h ? 'on' : '') + '" href="#/' + h + '">' + t + '</a>').join('');
+  return '<div class="shell">' +
+    '<aside class="side"><h1>مزاد المسابيح</h1><p>نسخة محلية على هذا الجهاز</p>' +
+    '<nav class="nav">' + links() + '</nav></aside>' +
+    '<main>' + body + '</main></div>' +
+    '<nav class="bottom">' + NAV.slice(0, 4).map(([h, t]) =>
+      '<a class="' + (active === h ? 'on' : '') + '" href="#/' + h + '">' + t + '</a>').join('') + '</nav>';
+}
+
+/**
+ * ربح القطعة = سعر بيعها ناقص سعر شرائها.
+ * يرجع null إن نقص أحد السعرين، فلا يُحسب رقم على أساس ناقص.
+ * القطعة المسترجعة لا ربح لها لأن بيعها أُلغي.
+ */
+function profitOf(i) {
+  const sale = salePriceOf(i);
+  if (sale == null) return null;
+
+  // قطعة العميل ليست ملكك ولم تشترها، فربحك منها نسبتك وحدها
+  if (!isStoreItem(i)) {
+    if (!i.commissionOn) return 0;
+    return i.commissionPct == null ? null : (sale * i.commissionPct) / 100;
+  }
+
+  // قطعة المتجر: اشتريتها بمالك، فربحك فارق السعر
+  if (i.costPrice == null) return null;
+  return sale - i.costPrice;
+}
+
+/** ما يستحقه صاحب القطعة: سعر البيع ناقص نسبتك */
+function clientShareOf(i) {
+  const sale = salePriceOf(i);
+  if (isStoreItem(i) || sale == null) return null;
+  const cut = i.commissionOn && i.commissionPct != null ? (sale * i.commissionPct) / 100 : 0;
+  return sale - cut;
+}
+
+/** اسم حقل السعر يختلف: المتجر يشتري، وقطعة العميل تُقيَّم فقط */
+const priceLabel = (i) => (isStoreItem(i) ? 'سعر الشراء' : 'قيمة القطعة');
+
+/** مبلغ النسبة إن كانت مفعّلة */
+function commissionOf(i) {
+  const sale = salePriceOf(i);
+  if (isStoreItem(i) || !i.commissionOn || sale == null || i.commissionPct == null) return null;
+  return (sale * i.commissionPct) / 100;
+}
+
+/** قسم النسبة: زر تفعيل وحقل النسبة بجانبه */
+function commissionField(idBtn, idPct, on, pct) {
+  return '<div id="' + idBtn + 'Wrap" class="field"><label>نسبتك من سعر البيع</label>' +
+    '<div style="display:flex;gap:10px;align-items:center">' +
+    '<button type="button" class="btn quiet' + (on ? ' on-comm' : '') + '" data-comm="' + idBtn + '" ' +
+    'style="height:44px' + (on ? ';background:var(--bead-soft);border-color:var(--bead)' : '') + '">' +
+    (on ? 'مفعّلة' : 'بلا نسبة') + '</button>' +
+    '<input id="' + idPct + '" inputmode="decimal" data-num="decimal" dir="ltr" class="num" ' +
+    'placeholder="10" value="' + (pct == null ? '' : pct) + '" style="flex:1"' +
+    (on ? '' : ' disabled') + '>' +
+    '<span class="muted">%</span></div>' +
+    '<p class="hint">تُحسب من سعر البيع. أطفئ الزر إن كنت لا تأخذ نسبة على هذه القطعة.</p></div>';
+}
+
+/** يعرض مبلغًا ملوّنًا حسب الربح أو الخسارة */
+function money(d, bold) {
+  if (d == null) return '<span class="muted">—</span>';
+  const color = d > 0 ? 'var(--jade)' : d < 0 ? 'var(--clay)' : 'var(--stone)';
+  return '<span class="num" style="color:' + color + (bold ? ';font-weight:600' : '') + '">' +
+    (d > 0 ? '+' : '') + d.toFixed(2) + ' ر.ق</span>';
+}
+
+/** قسم الشراء والبيع: البيع قد يكون أعلى من الشراء أو أقل، والفرق يوضّح النتيجة */
+function moneyCard(i) {
+  const cost = i.costPrice, sale = salePriceOf(i);
+  const d = profitOf(i);
+  const mine = isStoreItem(i);
+  const label = mine ? (d != null && d < 0 ? 'الخسارة' : 'الربح') : 'ربحك منها';
+  const cell = d == null
+    ? '<span class="muted">' + (mine ? 'يظهر بعد تسجيل السعرين' : 'يظهر بعد البيع وتحديد النسبة') + '</span>'
+    : money(d, true);
+
+  return '<dl class="info card" style="margin-top:16px">' +
+    '<div><dt>' + priceLabel(i) + '</dt><dd class="num">' +
+      (cost != null ? fmtPrice(cost) : '—') + '</dd></div>' +
+    (mine ? '' :
+      '<div><dt>نسبتك</dt><dd class="num">' +
+      (i.commissionOn ? (i.commissionPct == null ? '—' : i.commissionPct + '%') : 'بلا نسبة') +
+      '</dd></div>') +
+    '<div><dt>سعر البيع</dt><dd class="num">' +
+      (sale != null ? fmtPrice(sale) : '—') + '</dd></div>' +
+    '<div><dt>' + label + '</dt><dd>' + cell + '</dd></div>' +
+    (mine ? '' :
+      '<div><dt>للعميل</dt><dd class="num">' +
+      (clientShareOf(i) != null ? fmtPrice(clientShareOf(i))
+        : '<span class="muted">يظهر بعد البيع</span>') +
+      '</dd></div>') +
+    '</dl>';
+}
+
+const isStoreItem = (i) => i.ownerType === 'store' || !i.ownerClientId;
+const storeBadge = () => '<span class="badge b-in">قطعة المتجر</span>';
+const salePriceOf = (i) => (i.salePrice != null ? i.salePrice : (i.price != null ? i.price : null));
+
+const badge = (s) => '<span class="badge ' +
+  (s === 'مباعة' ? 'b-sold' : s === 'مسترجعة' ? 'b-ret' : 'b-in') + '">' + s + '</span>';
+
+const empty = (t, btn) => '<div class="empty"><p>' + esc(t) + '</p>' + (btn || '') + '</div>';
+
+function field(o) {
+  return '<div class="field"><label for="' + o.id + '">' + esc(o.label) + '</label>' +
+    (o.area
+      ? '<textarea id="' + o.id + '" rows="' + (o.rows || 3) + '">' + esc(o.value || '') + '</textarea>'
+      : '<input id="' + o.id + '" type="' + (o.type || 'text') + '"' +
+        (o.dir ? ' dir="' + o.dir + '" class="num"' : '') +
+        (o.mode ? ' inputmode="' + o.mode + '" data-num="' + o.mode + '"' : '') +
+        (o.ph ? ' placeholder="' + esc(o.ph) + '"' : '') +
+        ' value="' + esc(o.value || '') + '">') +
+    (o.hint ? '<p class="hint">' + esc(o.hint) + '</p>' : '') + '</div>';
+}
+
+const val = (id) => (document.getElementById(id) || {}).value || '';
+
+function showError(msg) {
+  const box = document.getElementById('formError');
+  if (box) { box.innerHTML = '<div class="notice err">' + esc(msg) + '</div>'; box.scrollIntoView({ block: 'center' }); }
+}
+
+/* ---------- الصفحات ---------- */
+
+async function viewDashboard() {
+  const [items, clients] = await Promise.all([all('items'), all('clients')]);
+  items.sort((a, b) => b.createdAt - a.createdAt);
+  clients.sort((a, b) => b.createdAt - a.createdAt);
+  const n = (s) => items.filter((i) => i.status === s).length;
+
+  const stat = (l, v) => '<div class="card stat"><span class="muted">' + l + '</span><b class="num">' + v + '</b></div>';
+
+  // تُحسب القطع المباعة فقط، والمسترجعة خرجت من الحساب لأن بيعها أُلغي
+  const sold = items.filter((i) => i.status === 'مباعة' && salePriceOf(i) != null);
+  const counted = sold.filter((i) => profitOf(i) != null);
+  const missing = sold.length - counted.length;
+
+  const revenue = sold.reduce((t, i) => t + salePriceOf(i), 0);
+
+  const storeSold = counted.filter((i) => isStoreItem(i));
+  const commSold = counted.filter((i) => !isStoreItem(i) && i.commissionOn);
+
+  const storeNet = storeSold.reduce((t, i) => t + profitOf(i), 0);
+  const commNet = commSold.reduce((t, i) => t + profitOf(i), 0);
+  const net = storeNet + commNet;
+
+  const losses = counted.filter((i) => profitOf(i) < 0);
+  const lossSum = losses.reduce((t, i) => t + profitOf(i), 0);
+
+  const netCard =
+    '<section style="margin-top:28px"><h3>الربح والخسارة</h3>' +
+    '<div class="grid g5">' +
+    '<div class="card stat"><span class="muted">إجمالي البيع</span><b class="num">' +
+      fmtPrice(revenue) + '</b></div>' +
+    '<div class="card stat"><span class="muted">ربح قطع المتجر</span><b>' +
+      (storeSold.length ? money(storeNet, true) : '<span class="muted">—</span>') +
+      '</b><span class="muted num">' + storeSold.length + ' قطعة</span></div>' +
+    '<div class="card stat"><span class="muted">نسبك من قطع العملاء</span><b>' +
+      (commSold.length ? money(commNet, true) : '<span class="muted">—</span>') +
+      '</b><span class="muted num">' + commSold.length + ' قطعة</span></div>' +
+    '<div class="card stat"><span class="muted">الصافي</span><b>' +
+      (counted.length ? money(net, true) : '<span class="muted">—</span>') + '</b></div>' +
+    '<div class="card stat"><span class="muted">قطع خاسرة</span><b class="num" style="color:var(--clay)">' +
+      losses.length + '</b><span class="muted num">' + (losses.length ? money(lossSum) : '') + '</span></div>' +
+    '</div>' +
+    (missing > 0
+      ? '<div class="notice warn" style="margin-top:12px">' +
+        '<span class="num">' + missing + '</span> قطعة مباعة ينقصها سعر الشراء أو النسبة، فلم تدخل في الحساب. ' +
+        'افتحها واضغط تعديل القطعة لتكملة بياناتها.</div>'
+      : '') +
+    '</section>';
+
+  const recentItems = items.length
+    ? '<ul class="list card">' + items.slice(0, 6).map((i) =>
+        '<li><a href="#/item/' + i.id + '"><span class="row"><span><span class="num">#' + i.itemNumber + '</span>' +
+        (i.type ? ' · ' + esc(i.type) : '') + '</span>' + badge(i.status) + '</span></a></li>').join('') + '</ul>'
+    : '<p class="muted">لا توجد قطع بعد.</p>';
+
+  const recentClients = clients.length
+    ? '<ul class="list card">' + clients.slice(0, 6).map((c) =>
+        '<li><a href="#/client/' + c.id + '"><span class="row"><span>' + esc(c.name || c.nickname) +
+        '</span><span class="muted num">' + fmtDate(c.createdAt) + '</span></span></a></li>').join('') + '</ul>'
+    : '<p class="muted">لا يوجد عملاء بعد.</p>';
+
+  return shell('', '<h2 class="page">الرئيسية</h2>' +
+    '<div class="grid g5">' + stat('العملاء', clients.length) + stat('القطع', items.length) +
+    stat('مستلمة', n('مستلمة')) + stat('مباعة', n('مباعة')) + stat('مسترجعة', n('مسترجعة')) + '</div>' +
+    netCard +
+    '<div class="grid g2" style="margin-top:28px">' +
+    '<section><h3>آخر القطع</h3>' + recentItems + '</section>' +
+    '<section><h3>آخر العملاء</h3>' + recentClients + '</section></div>');
+}
+
+async function viewClients(term) {
+  const rows = term ? await findClients(term) : (await all('clients')).sort((a, b) => b.createdAt - a.createdAt);
+
+  // مجموع ما اشتراه كل عميل، بلا القطع المسترجعة
+  const sales = await all('sales');
+  const totals = {};
+  for (const s of sales) {
+    if (s.status !== 'active') continue;
+    totals[s.buyerClientId] = (totals[s.buyerClientId] || 0) + (s.price || 0);
+  }
+
+  const list = rows.length
+    ? '<ul class="list card">' + rows.map((c) =>
+        '<li><a href="#/client/' + c.id + '"><span class="row"><span>' +
+        '<span style="font-weight:500">' + esc(c.name || c.nickname) + '</span>' +
+        '<span class="muted" style="display:block">' +
+        (c.name && c.nickname ? esc(c.nickname) : '') + (c.username ? ' @' + esc(c.username) : '') +
+        (c.phone ? ' · <span class="num">' + esc(c.phone) + '</span>' : '') +
+        '</span></span>' +
+        '<span style="text-align:end"><span class="num" style="font-weight:500">' +
+        (totals[c.id] ? fmtPrice(totals[c.id]) : '—') + '</span>' +
+        '<span class="muted" style="display:block">اشترى</span></span>' +
+        '</span></a></li>').join('') + '</ul>'
+    : empty(term ? 'لا نتائج مطابقة.' : 'لم تُضف أي عميل بعد.',
+        term ? '' : '<div style="margin-top:14px"><a href="#/client-new"><button class="btn">إضافة أول عميل</button></a></div>');
+
+  return shell('clients',
+    '<div class="row"><h2 class="page" style="margin:0">العملاء</h2>' +
+    '<a href="#/client-new"><button class="btn">إضافة عميل</button></a></div>' +
+    '<div style="max-width:520px;margin:18px 0">' +
+    '<input id="q" placeholder="ابحث بالاسم أو الكنية أو الهاتف" value="' + esc(term || '') + '"></div>' + list);
+}
+
+function clientForm(title, c, action) {
+  return shell('clients', '<h2 class="page">' + title + '</h2><div id="formError"></div>' +
+    '<div style="max-width:520px">' +
+    field({ id: 'f_name', label: 'الاسم', value: c.name }) +
+    field({ id: 'f_nick', label: 'الكنية', ph: 'أبو فلان', value: c.nickname }) +
+    field({ id: 'f_user', label: 'اسم المستخدم', dir: 'ltr', ph: '@example', hint: 'يُحفظ بدون علامة @', value: c.username }) +
+    field({ id: 'f_phone', label: 'رقم الهاتف', type: 'tel', mode: 'tel', dir: 'ltr', value: c.phone }) +
+    field({ id: 'f_notes', label: 'ملاحظات', area: true, rows: 4, value: c.notes }) +
+    '<div style="display:flex;gap:12px">' +
+    '<button class="btn" data-do="' + action + '">حفظ</button>' +
+    '<button class="btn quiet" data-do="back">إلغاء</button></div></div>');
+}
+
+async function viewClient(id, tab) {
+  const c = await one('clients', id);
+  if (!c) return shell('clients', empty('لم نجد هذا العميل.'));
+
+  const [items, sales, returns] = await Promise.all([all('items'), all('sales'), all('returns')]);
+  const delivered = items.filter((i) => i.ownerClientId === id);
+  const bought = sales.filter((s) => s.buyerClientId === id);
+  const returned = returns.filter((r) => r.buyerClientId === id);
+
+  const timeline = [
+    ...delivered.map((i) => ({ d: i.deliveryDate, t: 'سلّم القطعة #' + i.itemNumber, id: i.id })),
+    ...bought.map((s) => ({ d: s.date, t: 'اشترى القطعة #' + s.itemNumber, id: s.itemId })),
+    ...returned.map((r) => ({ d: r.returnDate, t: 'استرجع القطعة #' + r.itemNumber, id: r.itemId })),
+    ...returns.filter((r) => r.ownerClientId === id)
+      .map((r) => ({ d: r.returnDate, t: 'عادت إليه القطعة #' + r.itemNumber, id: r.itemId })),
+  ].sort((a, b) => b.d - a.d);
+
+  const paid = bought.filter((s) => s.status === 'active');
+  const paidTotal = paid.reduce((sum, s) => sum + (s.price || 0), 0);
+  const backTotal = bought.filter((s) => s.status === 'cancelled')
+    .reduce((sum, s) => sum + (s.price || 0), 0);
+
+  const dueItems = delivered.filter((i) => i.status === 'مباعة' && clientShareOf(i) != null);
+  const dueTotal = dueItems.reduce((t, i) => t + clientShareOf(i), 0);
+
+  const summary = '<div class="grid" style="margin-top:16px;' +
+    'grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">' +
+    '<div class="card stat"><span class="muted">اشترى من عندك</span>' +
+    '<b class="num">' + fmtPrice(paidTotal) + '</b>' +
+    '<span class="muted num">' + paid.length + ' قطعة</span></div>' +
+    (backTotal > 0
+      ? '<div class="card stat"><span class="muted">مسترجع من مشترياته</span>' +
+        '<b class="num" style="color:var(--clay)">' + fmtPrice(backTotal) + '</b>' +
+        '<span class="muted num">' + (bought.length - paid.length) + ' قطعة</span></div>'
+      : '<div class="card stat"><span class="muted">سلّم للمزاد</span>' +
+        '<b class="num">' + delivered.length + '</b><span class="muted">قطعة</span></div>') +
+    '<div class="card stat"><span class="muted">له من مبيعات قطعه</span>' +
+    '<b class="num">' + fmtPrice(dueTotal) + '</b>' +
+    '<span class="muted num">' + dueItems.length + ' قطعة مباعة</span></div>' +
+    '</div>';
+
+  const TABS = [['info', 'المعلومات'], ['delivered', 'قطع سلّمها'], ['bought', 'قطع اشتراها'],
+    ['returned', 'قطع مسترجعة'], ['timeline', 'السجل الزمني']];
+  const current = tab || 'info';
+
+  let body = '';
+  if (current === 'info') {
+    const line = (l, v) => '<div><dt>' + l + '</dt><dd>' + (v ? esc(v) : '—') + '</dd></div>';
+    body = '<dl class="info card">' + line('الاسم', c.name) + line('الكنية', c.nickname) +
+      line('اسم المستخدم', c.username ? '@' + c.username : '') +
+      line('رقم الهاتف', c.phone) + line('ملاحظات', c.notes) + '</dl>';
+  } else if (current === 'delivered') {
+    body = delivered.length ? '<ul class="list card">' + delivered.map((i) =>
+      '<li><a href="#/item/' + i.id + '"><span class="row"><span><span class="num">#' + i.itemNumber + '</span>' +
+      (i.type ? ' · ' + esc(i.type) : '') + '<span class="muted" style="display:block">' +
+      '<span class="num">' + fmtWeight(i.weightGrams) + '</span> · <span class="num">' +
+      fmtBeads(i.beadDim1, i.beadDim2) + '</span> · <span class="num">' + fmtDate(i.deliveryDate) +
+      '</span>' + (i.costPrice != null ? ' · قيمة <span class="num">' + fmtPrice(i.costPrice) + '</span>' : '') +
+      (salePriceOf(i) != null ? ' · بيع <span class="num">' + fmtPrice(salePriceOf(i)) + '</span>' : '') +
+      (clientShareOf(i) != null && i.status === 'مباعة'
+        ? ' · له <span class="num">' + fmtPrice(clientShareOf(i)) + '</span>' : '') +
+      '</span></span>' + badge(i.status) + '</span></a></li>').join('') + '</ul>'
+      : empty('لا توجد قطع سلّمها هذا العميل.');
+  } else if (current === 'bought') {
+    body = bought.length ? '<ul class="list card">' + bought.map((s) =>
+      '<li><a href="#/item/' + s.itemId + '"><span class="row"><span>قطعة <span class="num">#' + s.itemNumber +
+      '</span><span class="muted" style="display:block"><span class="num">' + fmtPrice(s.price) +
+      '</span> · <span class="num">' + fmtDate(s.date) + '</span>' +
+      (s.notes ? ' · ' + esc(s.notes) : '') + '</span></span>' +
+      (s.status === 'cancelled' ? '<span class="badge b-ret">مسترجعة</span>' : '') +
+      '</span></a></li>').join('') + '</ul>'
+      : empty('لا توجد قطع اشتراها هذا العميل.');
+  } else if (current === 'returned') {
+    body = returned.length ? '<ul class="list card">' + returned.map((r) =>
+      '<li><a href="#/item/' + r.itemId + '">قطعة <span class="num">#' + r.itemNumber + '</span>' +
+      '<span class="muted" style="display:block"><span class="num">' + fmtDate(r.returnDate) + '</span>' +
+      (r.reason ? ' · السبب: ' + esc(r.reason) : '') + '</span>' +
+      (r.buyerNote ? '<span class="muted" style="display:block">' + esc(r.buyerNote) + '</span>' : '') +
+      '</a></li>').join('') + '</ul>'
+      : empty('لا توجد قطع استرجعها هذا العميل.');
+  } else {
+    body = timeline.length ? '<ul class="timeline">' + timeline.map((e) =>
+      '<li><p class="muted num">' + fmtDate(e.d) + '</p><a href="#/item/' + e.id + '">' + esc(e.t) + '</a></li>'
+    ).join('') + '</ul>' : empty('لا توجد حركات لهذا العميل بعد.');
+  }
+
+  return shell('clients',
+    '<div class="row"><div><h2 class="page" style="margin:0">' + esc(c.name || c.nickname) + '</h2>' +
+    '<p class="muted">' + (c.name && c.nickname ? esc(c.nickname) + ' · ' : '') +
+    '<span class="num">' + esc(c.phone) + '</span></p></div>' +
+    '<a href="#/client-edit/' + c.id + '"><button class="btn quiet">تعديل</button></a></div>' +
+    summary +
+    '<div class="tabs" style="margin-top:18px">' + TABS.map(([k, t]) =>
+      '<button class="' + (current === k ? 'on' : '') + '" data-tab="' + k + '">' + t + '</button>').join('') +
+    '</div>' + body);
+}
+
+async function viewItems(filter) {
+  const rows = (await all('items')).sort((a, b) => b.createdAt - a.createdAt);
+  const f = filter || 'الكل';
+  const own = state.ownerFilter || 'الجميع';
+  const shown = rows
+    .filter((i) => (f === 'الكل' ? true : i.status === f))
+    .filter((i) => (own === 'الجميع' ? true
+      : own === 'قطع المتجر' ? isStoreItem(i) : !isStoreItem(i)));
+
+  const list = shown.length
+    ? '<ul class="list card">' + shown.map((i) =>
+        '<li><a href="#/item/' + i.id + '" style="display:flex;align-items:center;gap:12px">' +
+        '<img class="thumb" data-img="' + (i.imageIds || [])[0] + '" alt="">' +
+        '<span style="flex:1;min-width:0"><span class="row"><span style="font-weight:500">' +
+        '<span class="num">#' + i.itemNumber + '</span>' + (i.type ? ' · ' + esc(i.type) : '') +
+        (isStoreItem(i) ? ' ' + storeBadge() : '') + '</span>' +
+        badge(i.status) + '</span>' +
+        '<span class="muted" style="display:block"><span class="num">' + fmtWeight(i.weightGrams) +
+        '</span> · <span class="num">' + fmtBeads(i.beadDim1, i.beadDim2) + '</span>' +
+        (i.costPrice != null ? ' · ' + (isStoreItem(i) ? 'شراء' : 'قيمة') +
+          ' <span class="num">' + fmtPrice(i.costPrice) + '</span>' : '') +
+        (salePriceOf(i) != null ? ' · بيع <span class="num">' + fmtPrice(salePriceOf(i)) + '</span>' : '') +
+        (profitOf(i) ? ' · ' + money(profitOf(i)) : '') +
+        '</span></span></a></li>'
+      ).join('') + '</ul>'
+    : empty(f === 'الكل' ? 'لم تُسجَّل أي قطعة بعد.' : 'لا توجد قطع بهذه الحالة.',
+        f === 'الكل' ? '<div style="margin-top:14px"><a href="#/item-new"><button class="btn">تسجيل أول قطعة</button></a></div>' : '');
+
+  return shell('items',
+    '<div class="row"><h2 class="page" style="margin:0">القطع</h2>' +
+    '<a href="#/item-new"><button class="btn">تسجيل قطعة</button></a></div>' +
+    '<div class="tabs" style="margin-top:18px;border-bottom:0;margin-bottom:0">' +
+    ['الجميع', 'قطع المتجر', 'قطع العملاء'].map((s) =>
+      '<button class="' + (own === s ? 'on' : '') + '" data-owner-filter="' + s + '">' + s + '</button>').join('') +
+    '</div>' +
+    '<div class="tabs">' +
+    ['الكل', 'مستلمة', 'مباعة', 'مسترجعة'].map((s) =>
+      '<button class="' + (f === s ? 'on' : '') + '" data-filter="' + s + '">' + s + '</button>').join('') +
+    '</div>' + list);
+}
+
+function viewItemNew() {
+  return shell('items', '<h2 class="page">تسجيل قطعة</h2><div id="formError"></div>' +
+    '<div style="max-width:520px">' +
+    '<div class="field"><label>مالك القطعة</label><div class="tabs" style="margin-bottom:0">' +
+    '<button type="button" class="on" data-otype="client">قطعة عميل</button>' +
+    '<button type="button" data-otype="store">قطعة المتجر</button></div></div>' +
+    '<div id="ownerWrap" class="field"><label>العميل الذي سلّم القطعة</label>' +
+    '<input id="ownerSearch" placeholder="ابحث بالاسم أو الكنية أو الهاتف">' +
+    '<div id="ownerList"></div><input type="hidden" id="ownerId"></div>' +
+    field({ id: 'f_type', label: 'نوع المسباح' }) +
+    commissionField('f_comm', 'f_pct', true, null) +
+    field({ id: 'f_cost', label: 'قيمة القطعة', mode: 'decimal', dir: 'ltr',
+            hint: 'تقديرك لقيمتها وبكم تنوي بيعها' }) +
+    field({ id: 'f_weight', label: 'الوزن بالغرام', mode: 'decimal', dir: 'ltr', ph: '12.50' }) +
+    '<div class="grid g2">' +
+    field({ id: 'f_d1', label: 'قياس الخرز الأول (مم)', mode: 'decimal', dir: 'ltr' }) +
+    field({ id: 'f_d2', label: 'قياس الخرز الثاني (مم)', mode: 'decimal', dir: 'ltr' }) +
+    '</div>' +
+    field({ id: 'f_count', label: 'عدد الخرز', mode: 'numeric', dir: 'ltr', hint: 'اختياري' }) +
+    field({ id: 'f_date', label: 'تاريخ التسليم', type: 'date', dir: 'ltr', value: dateInput(Date.now()) }) +
+    '<div class="grid g2">' +
+    '<div><label>الصورة الأولى</label><button class="pick" data-pick="1"><span class="muted">اضغط للتصوير أو الاختيار</span></button></div>' +
+    '<div><label>الصورة الثانية</label><button class="pick" data-pick="2"><span class="muted">اضغط للتصوير أو الاختيار</span></button></div>' +
+    '</div>' +
+    field({ id: 'f_notes', label: 'ملاحظات', area: true }) +
+    '<div style="display:flex;gap:12px;margin-top:16px">' +
+    '<button class="btn" data-do="save-item">حفظ القطعة</button>' +
+    '<button class="btn quiet" data-do="cancel-item">إلغاء</button></div></div>' +
+    '<input type="file" id="picker" accept="image/*" style="display:none">');
+}
+
+async function viewItem(id, mode) {
+  const item = await one('items', id);
+  if (!item) return shell('items', empty('لم نجد هذه القطعة.'));
+  const owner = await one('clients', item.ownerClientId);
+  const buyer = item.buyerClientId ? await one('clients', item.buyerClientId) : null;
+
+  const line = (l, v) => '<div><dt>' + l + '</dt><dd class="num">' + v + '</dd></div>';
+  const person = (l, p, fallback) => '<div><dt>' + l + '</dt><dd>' +
+    (p ? '<a href="#/client/' + p.id + '" style="color:var(--bead)">' + esc(p.name || p.nickname) + '</a>'
+       : '<span class="muted">' + fallback + '</span>') + '</dd></div>';
+
+  let panel = '';
+  if (mode === 'sell') {
+    panel = '<div class="card" style="padding:16px;margin-top:20px"><h3>تسجيل بيع</h3>' +
+      '<div class="field"><label>المشتري</label><input id="buyerSearch" placeholder="ابحث بالاسم أو الهاتف">' +
+      '<div id="buyerList"></div><input type="hidden" id="buyerId"></div>' +
+      field({ id: 'f_price', label: 'سعر البيع بالريال القطري', mode: 'decimal', dir: 'ltr' }) +
+      field({ id: 'f_saledate', label: 'تاريخ البيع', type: 'date', dir: 'ltr', value: dateInput(Date.now()) }) +
+      field({ id: 'f_salenotes', label: 'ملاحظات' }) +
+      '<div style="display:flex;gap:12px"><button class="btn" data-do="confirm-sale">حفظ البيع</button>' +
+      '<button class="btn quiet" data-do="view-item">إلغاء</button></div></div>';
+  } else if (mode === 'return') {
+    panel = '<div class="card" style="padding:16px;margin-top:20px"><h3>تسجيل استرجاع</h3>' +
+      '<div class="notice warn" style="margin-bottom:16px">سيُلغى البيع وتعود القطعة قابلة للبيع من جديد، وتبقى ظاهرة في ملف المشتري بعلامة مسترجعة.</div>' +
+      field({ id: 'f_retdate', label: 'تاريخ الاسترجاع', type: 'date', dir: 'ltr', value: dateInput(Date.now()) }) +
+      field({ id: 'f_reason', label: 'سبب الاسترجاع' }) +
+      field({ id: 'f_buyernote', label: 'ملاحظة على المشتري' }) +
+      '<div style="display:flex;gap:12px"><button class="btn" data-do="confirm-return">حفظ الاسترجاع</button>' +
+      '<button class="btn quiet" data-do="view-item">إلغاء</button></div></div>';
+  } else if (mode === 'edit') {
+    panel = '<div class="card" style="padding:16px;margin-top:20px"><h3>تعديل القطعة</h3>' +
+      field({ id: 'e_type', label: 'نوع المسباح', value: item.type }) +
+      field({ id: 'e_weight', label: 'الوزن بالغرام', mode: 'decimal', dir: 'ltr', value: item.weightGrams }) +
+      '<div class="grid g2">' +
+      field({ id: 'e_d1', label: 'قياس الخرز الأول (مم)', mode: 'decimal', dir: 'ltr', value: item.beadDim1 }) +
+      field({ id: 'e_d2', label: 'قياس الخرز الثاني (مم)', mode: 'decimal', dir: 'ltr', value: item.beadDim2 }) +
+      '</div>' +
+      field({ id: 'e_count', label: 'عدد الخرز', mode: 'numeric', dir: 'ltr',
+              value: item.beadCount == null ? '' : item.beadCount, hint: 'اختياري' }) +
+      (isStoreItem(item) ? '' : commissionField('e_comm', 'e_pct', !!item.commissionOn, item.commissionPct)) +
+      field({ id: 'e_cost', label: priceLabel(item), mode: 'decimal', dir: 'ltr',
+              value: item.costPrice == null ? '' : item.costPrice,
+              hint: isStoreItem(item) ? 'ما دفعته فيها' : 'تقديرك لقيمتها وبكم تنوي بيعها' }) +
+      field({ id: 'e_sale', label: 'سعر البيع', mode: 'decimal', dir: 'ltr',
+              value: salePriceOf(item) == null ? '' : salePriceOf(item),
+              hint: 'يُملأ عند البيع، ويمكن تصحيحه من هنا' }) +
+      field({ id: 'e_notes', label: 'ملاحظات', area: true, value: item.notes }) +
+      '<div style="display:flex;gap:12px"><button class="btn" data-do="confirm-edit">حفظ التعديل</button>' +
+      '<button class="btn quiet" data-do="view-item">إلغاء</button></div></div>';
+  } else if (mode === 'delete') {
+    panel = '<div class="notice err" style="margin-top:20px"><h3>تأكيد الحذف</h3>' +
+      '<p>سيُحذف كل ما يخص هذه القطعة: صورتاها وسجل تسليمها وبيعها واسترجاعها. ويعود رقمها ' +
+      '<span class="num">#' + item.itemNumber + '</span> للاستخدام في قطعة جديدة. العملية لا تُستردّ.</p>' +
+      '<div style="display:flex;gap:12px;margin-top:14px">' +
+      '<button class="btn danger" data-do="confirm-delete">نعم، احذفها</button>' +
+      '<button class="btn quiet" data-do="view-item">تراجع</button></div></div>';
+  } else {
+    panel = '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px">' +
+      (item.status !== 'مباعة' ? '<button class="btn" data-do="mode-sell">تسجيل بيع</button>' : '') +
+      (item.status === 'مباعة' ? '<button class="btn quiet" data-do="mode-return">تسجيل استرجاع</button>' : '') +
+      '<button class="btn quiet" data-do="mode-edit">تعديل القطعة</button>' +
+      '<button class="btn danger" data-do="mode-delete">حذف القطعة</button></div>';
+  }
+
+  return shell('items',
+    '<h2 class="page">قطعة <span class="num">#' + item.itemNumber + '</span> ' + badge(item.status) + '</h2>' +
+    '<div style="max-width:620px">' +
+    '<div class="grid g2">' + (item.imageIds || []).map((im) =>
+      '<img class="photo" data-img-full="' + im + '" alt="">').join('') + '</div>' +
+    '<dl class="info card" style="margin-top:16px">' +
+    line('النوع', esc(item.type) || '—') + line('الوزن', fmtWeight(item.weightGrams)) +
+    line('قياس الخرز', fmtBeads(item.beadDim1, item.beadDim2)) +
+    line('عدد الخرز', item.beadCount == null ? '—' : item.beadCount) +
+    line('تاريخ التسليم', fmtDate(item.deliveryDate)) +
+    (item.saleDate ? line('تاريخ البيع', fmtDate(item.saleDate)) : '') +
+    (item.returnDate ? line('تاريخ الاسترجاع', fmtDate(item.returnDate)) : '') +
+    line('الملاحظات', esc(item.notes) || '—') + '</dl>' +
+    moneyCard(item) +
+    '<dl class="info card" style="margin-top:16px">' +
+    (isStoreItem(item)
+      ? '<div><dt>مالك القطعة</dt><dd>' + storeBadge() + '</dd></div>'
+      : person('البائع', owner, '—')) +
+    person('المشتري', buyer, 'لم تُبع بعد') + '</dl>' +
+    '<div id="formError"></div>' + panel + '</div>');
+}
+
+async function findItems(term) {
+  const raw = String(term || '').trim();
+  if (!raw) return [];
+  const rows = await all('items');
+  const d = digits(raw);
+  const n = norm(raw.replace(/^#/, ''));
+  return rows.filter((i) => {
+    if (d && String(i.itemNumber).includes(d)) return true;
+    if (n && norm(i.type).includes(n)) return true;
+    return false;
+  }).slice(0, 20);
+}
+
+async function viewSearch(term) {
+  let body = '<p class="muted" style="margin:14px 0">ابحث بالاسم أو الكنية أو اسم المستخدم أو رقم الهاتف أو رقم القطعة — أيها كان.</p>';
+
+  if (term && term.trim()) {
+    const [clients, items] = await Promise.all([findClients(term), findItems(term)]);
+    const clientsById = {};
+    for (const c of await all('clients')) clientsById[c.id] = c;
+
+    const itemsHtml = items.length
+      ? '<h3 style="margin:20px 0 8px">القطع</h3><ul class="list card">' + items.map((i) => {
+          const ow = isStoreItem(i) ? null : clientsById[i.ownerClientId];
+          return '<li><a href="#/item/' + i.id + '"><span class="row"><span>' +
+            '<span style="font-weight:500"><span class="num">#' + i.itemNumber + '</span>' +
+            (i.type ? ' · ' + esc(i.type) : '') + '</span>' +
+            '<span class="muted" style="display:block">' +
+            (ow ? 'العميل: ' + esc(ow.name || ow.nickname) : 'قطعة المتجر') +
+            (salePriceOf(i) != null ? ' · بيع <span class="num">' + fmtPrice(salePriceOf(i)) + '</span>' : '') +
+            '</span></span>' + badge(i.status) + '</span></a></li>';
+        }).join('') + '</ul>'
+      : '';
+
+    const clientsHtml = clients.length
+      ? '<h3 style="margin:20px 0 8px">العملاء</h3><ul class="list card">' + clients.map((c) =>
+          '<li><a href="#/client/' + c.id + '"><span class="row"><span>' +
+          '<span style="font-weight:500">' + esc(c.name || c.nickname) + '</span>' +
+          '<span class="muted" style="display:block">' +
+          (c.name && c.nickname ? esc(c.nickname) : '') +
+          (c.username ? ' @' + esc(c.username) : '') + '</span></span>' +
+          '<span class="muted num">' + esc(c.phone) + '</span></span></a></li>').join('') + '</ul>'
+      : '';
+
+    body = (itemsHtml || clientsHtml) ? clientsHtml + itemsHtml : empty('لا نتائج مطابقة.');
+  }
+
+  return shell('search', '<h2 class="page">البحث</h2>' +
+    '<div style="max-width:560px"><input id="sq" placeholder="اسم أو كنية أو هاتف أو رقم قطعة، ثم Enter" value="' +
+    esc(term || '') + '">' + body + '</div>');
+}
+
+async function viewActivity() {
+  const rows = (await all('activity')).sort((a, b) => b.timestamp - a.timestamp).slice(0, 200);
+  const list = rows.length
+    ? '<ul class="list card">' + rows.map((r) =>
+        '<li><span class="cell row"><span>' + (ACTIONS[r.action] || r.action) +
+        (r.targetLabel ? ' <span class="num">' + esc(r.targetLabel) + '</span>' : '') +
+        '</span><span class="muted num">' + fmtDateTime(r.timestamp) + '</span></span></li>').join('') + '</ul>'
+    : empty('لا توجد عمليات مسجّلة بعد.');
+
+  return shell('activity', '<h2 class="page">سجل العمليات</h2>' +
+    '<p class="muted" style="margin-bottom:16px">يُكتب ولا يُعدَّل ولا يُحذف، ليبقى أثر كل عملية محفوظًا.</p>' +
+    '<div style="max-width:620px">' + list + '</div>');
+}
+
+function viewBackup(msg) {
+  return shell('backup', '<h2 class="page">النسخة الاحتياطية</h2><div style="max-width:560px">' +
+    '<div class="notice warn">بياناتك كلها محفوظة داخل متصفح هذا الجهاز وحده. تضيع نهائيًا إن مسحت بيانات المتصفح أو تعطّل الجهاز، ولا توجد نسخة في أي مكان آخر. صدّر نسخة بانتظام واحفظها خارج الجهاز.</div>' +
+    (msg ? '<div class="notice" style="margin-top:14px">' + esc(msg) + '</div>' : '') +
+    '<div class="card" style="padding:16px;margin-top:18px"><h3>تصدير نسخة</h3>' +
+    '<p class="muted" style="margin-bottom:14px">ملف واحد فيه العملاء والقطع والصور والمبيعات والمرتجعات وسجل العمليات.</p>' +
+    '<button class="btn" data-do="export">تصدير الآن</button></div>' +
+    '<div class="card" style="padding:16px;margin-top:14px"><h3>استيراد نسخة</h3>' +
+    '<p class="muted" style="margin-bottom:14px">الاستيراد يمسح كل ما في الجهاز الآن ويضع محتوى الملف مكانه.</p>' +
+    '<button class="btn quiet" data-do="import">اختر ملفًا واستبدل</button></div>' +
+    '<input type="file" id="importFile" accept="application/json" style="display:none"></div>');
+}
+
+/* ---------- الصور داخل الصفحة ---------- */
+
+async function hydrateImages() {
+  for (const el of document.querySelectorAll('[data-img]')) {
+    const id = el.getAttribute('data-img');
+    if (!id || id === 'undefined') continue;
+    const u = await imgURL(id, 'thumb');
+    if (u) el.src = u;
+  }
+  for (const el of document.querySelectorAll('[data-img-full]')) {
+    const u = await imgURL(el.getAttribute('data-img-full'), 'full');
+    if (u) el.src = u;
+  }
+}
+
+/* ---------- التوجيه ---------- */
+
+const state = { pickTarget: null, images: { 1: null, 2: null }, owner: '', buyer: '' };
+
+async function render() {
+  const hash = location.hash.replace(/^#\/?/, '');
+  const [route, arg] = hash.split('/');
+  let html = '';
+
+  try {
+    if (!route) html = await viewDashboard();
+    else if (route === 'clients') html = await viewClients(state.clientTerm);
+    else if (route === 'client-new') html = clientForm('إضافة عميل', { name: '', nickname: '', username: '', phone: '', notes: '' }, 'create-client');
+    else if (route === 'client-edit') {
+      const c = await one('clients', arg);
+      state.editId = arg;
+      html = c ? clientForm('تعديل بيانات العميل', c, 'update-client') : shell('clients', empty('لم نجد هذا العميل.'));
+    }
+    else if (route === 'client') html = await viewClient(arg, state.clientTab);
+    else if (route === 'items') html = await viewItems(state.itemFilter);
+    else if (route === 'item-new') {
+      state.images = { 1: null, 2: null }; state.owner = '';
+      state.ownerType = 'client'; state.comm = true;
+      html = viewItemNew();
+    }
+    else if (route === 'item') html = await viewItem(arg, state.itemMode);
+    else if (route === 'search') html = await viewSearch(state.searchTerm);
+    else if (route === 'activity') html = await viewActivity();
+    else if (route === 'backup') html = viewBackup(state.backupMsg);
+    else html = await viewDashboard();
+  } catch (e) {
+    html = shell('', '<div class="notice err">تعذّر عرض الصفحة. أعد تحميل الملف.<br>' + esc(e.message) + '</div>');
+  }
+
+  root.innerHTML = html;
+  state.backupMsg = '';
+  hydrateImages();
+  wire();
+}
+
+function go(hash) { location.hash = hash; }
+
+/* ---------- الأحداث ---------- */
+
+function wire() {
+  const q = document.getElementById('q');
+  if (q) {
+    let t;
+    q.oninput = () => {
+      clearTimeout(t);
+      t = setTimeout(async () => {
+        state.clientTerm = q.value;
+        const pos = q.selectionStart;
+        await render();
+        const again = document.getElementById('q');
+        if (again) { again.focus(); again.setSelectionRange(pos, pos); }
+      }, 250);
+    };
+  }
+
+  const sq = document.getElementById('sq');
+  if (sq) {
+    sq.focus();
+    sq.setSelectionRange(sq.value.length, sq.value.length);
+    sq.onkeydown = async (e) => {
+      if (e.key === 'Enter') { state.searchTerm = sq.value; await render(); }
+    };
+  }
+
+  document.querySelectorAll('[data-tab]').forEach((b) => {
+    b.onclick = async () => { state.clientTab = b.getAttribute('data-tab'); await render(); };
+  });
+  document.querySelectorAll('[data-filter]').forEach((b) => {
+    b.onclick = async () => { state.itemFilter = b.getAttribute('data-filter'); await render(); };
+  });
+  document.querySelectorAll('[data-owner-filter]').forEach((b) => {
+    b.onclick = async () => { state.ownerFilter = b.getAttribute('data-owner-filter'); await render(); };
+  });
+
+  // قطعة المتجر أو قطعة عميل — بلا إعادة رسم حتى لا تضيع المدخلات
+  document.querySelectorAll('[data-otype]').forEach((b) => {
+    b.onclick = () => {
+      const kind = b.getAttribute('data-otype');
+      state.ownerType = kind;
+      document.querySelectorAll('[data-otype]').forEach((x) => x.classList.toggle('on', x === b));
+      const wrap = document.getElementById('ownerWrap');
+      if (wrap) wrap.style.display = kind === 'store' ? 'none' : '';
+      // النسبة لا معنى لها في قطعة المتجر، فربحها فارق السعر
+      const comm = document.getElementById('f_commWrap');
+      if (comm) comm.style.display = kind === 'store' ? 'none' : '';
+
+      // قطعة العميل تُقيَّم ولا تُشترى، فالتسمية تتبدّل معها
+      const lbl = document.querySelector('label[for="f_cost"]');
+      const hint = lbl && lbl.parentElement ? lbl.parentElement.querySelector('.hint') : null;
+      if (lbl) lbl.textContent = kind === 'store' ? 'سعر الشراء' : 'قيمة القطعة';
+      if (hint) hint.textContent = kind === 'store' ? 'ما دفعته فيها' : 'تقديرك لقيمتها وبكم تنوي بيعها';
+
+      if (kind === 'store') { state.owner = ''; state.comm = false; }
+      else state.comm = true;
+    };
+  });
+
+  // زر النسبة
+  document.querySelectorAll('[data-comm]').forEach((b) => {
+    b.onclick = () => {
+      const pctInput = document.getElementById(b.getAttribute('data-comm') === 'f_comm' ? 'f_pct' : 'e_pct');
+      state.comm = !state.comm;
+      b.textContent = state.comm ? 'مفعّلة' : 'بلا نسبة';
+      b.style.background = state.comm ? 'var(--bead-soft)' : '';
+      b.style.borderColor = state.comm ? 'var(--bead)' : '';
+      if (pctInput) {
+        pctInput.disabled = !state.comm;
+        if (!state.comm) pctInput.value = '';
+      }
+    };
+  });
+
+  // اختيار العميل في نموذج القطعة والبيع
+  ['owner', 'buyer'].forEach((kind) => {
+    const box = document.getElementById(kind + 'Search');
+    if (!box) return;
+    let t;
+    const run = () => {
+      clearTimeout(t);
+      t = setTimeout(async () => {
+        const list = document.getElementById(kind + 'List');
+        const rows = box.value.trim()
+          ? await findClients(box.value)
+          : (await all('clients')).slice(0, 6);
+        list.innerHTML = rows.length
+          ? '<ul class="list card" style="margin-top:8px;max-height:200px;overflow:auto">' + rows.map((c) =>
+              '<li><button class="cell row" data-choose="' + kind + '" data-id="' + c.id +
+              '" style="width:100%;background:none;border:0;cursor:pointer;text-align:start">' +
+              '<span>' + esc(c.name || c.nickname) + '</span><span class="muted num">' + esc(c.phone) +
+              '</span></button></li>').join('') + '</ul>'
+          : '<p class="hint">لا نتائج. أضف العميل أولًا من صفحة العملاء.</p>';
+        list.querySelectorAll('[data-choose]').forEach((btn) => {
+          btn.onclick = () => {
+            const id = btn.getAttribute('data-id');
+            state[kind] = id;
+            document.getElementById(kind + 'Id').value = id;
+            box.value = btn.querySelector('span').textContent;
+            list.innerHTML = '';
+          };
+        });
+      }, 200);
+    };
+    box.oninput = run;
+    box.onfocus = run;
+  });
+
+  // الصور
+  const picker = document.getElementById('picker');
+  document.querySelectorAll('[data-pick]').forEach((b) => {
+    b.onclick = () => { state.pickTarget = b.getAttribute('data-pick'); picker.click(); };
+  });
+  if (picker) picker.onchange = async () => {
+    const file = picker.files[0];
+    if (!file) return;
+    const slot = state.pickTarget;
+    const btn = document.querySelector('[data-pick="' + slot + '"]');
+    btn.innerHTML = '<span class="spin"></span>';
+    try {
+      const id = await storeImage(file);
+      state.images[slot] = id;
+      const u = await imgURL(id, 'thumb');
+      btn.innerHTML = '<img src="' + u + '" alt="">';
+    } catch {
+      btn.innerHTML = '<span class="muted">تعذّرت قراءة الصورة</span>';
+    }
+    picker.value = '';
+  };
+
+  document.querySelectorAll('[data-num]').forEach((el) => {
+    const kind = el.getAttribute('data-num');
+    el.addEventListener('input', () => {
+      const before = el.value;
+      const after = cleanNumeric(before, kind);
+      if (after === before) return;
+      const pos = el.selectionStart || 0;
+      el.value = after;
+      const back = pos - (before.length - after.length);
+      try { el.setSelectionRange(back, back); } catch (e) { /* بعض الأنواع لا تدعم التحديد */ }
+    });
+  });
+
+  const importFile = document.getElementById('importFile');
+  if (importFile) importFile.onchange = async () => {
+    const file = importFile.files[0];
+    if (!file) return;
+    try {
+      await importAll(file);
+      state.backupMsg = 'استُعيدت البيانات بنجاح.';
+    } catch {
+      state.backupMsg = 'الملف غير صالح أو تالف.';
+    }
+    await render();
+  };
+
+  document.querySelectorAll('[data-do]').forEach((b) => { b.onclick = () => act(b.getAttribute('data-do'), b); });
+}
+
+async function act(what, btn) {
+  const id = (location.hash.split('/')[2] || '');
+
+  if (what === 'back') return history.back();
+  if (what === 'view-item') { state.itemMode = null; return render(); }
+  if (what === 'mode-sell') { state.itemMode = 'sell'; state.buyer = ''; return render(); }
+  if (what === 'mode-return') { state.itemMode = 'return'; return render(); }
+  if (what === 'mode-edit') {
+    const it = await one('items', id);
+    state.comm = !!(it && it.commissionOn);
+    state.itemMode = 'edit';
+    return render();
+  }
+  if (what === 'mode-delete') { state.itemMode = 'delete'; return render(); }
+
+  if (what === 'confirm-edit') {
+    const weight = Number(val('e_weight'));
+    const d1 = Number(val('e_d1')), d2 = Number(val('e_d2'));
+    if (Number.isNaN(weight)) return showError('أدخل وزنًا صحيحًا بالغرام.');
+    if (Number.isNaN(d1) || Number.isNaN(d2)) return showError('أدخل قياسَي الخرز بالمليمتر.');
+
+    const item = await one('items', id);
+    const count = val('e_count').trim();
+    const cost = val('e_cost').trim();
+    const sale = val('e_sale').trim();
+    const pct = val('e_pct').trim();
+    const commOn = !isStoreItem(item) && state.comm !== false;
+    if (commOn && !pct) return showError('أدخل نسبتك، أو أطفئ زر النسبة.');
+
+    btn.disabled = true;
+    await save('items', {
+      ...item,
+      type: val('e_type').trim(), weightGrams: weight, beadDim1: d1, beadDim2: d2,
+      beadCount: count ? Number(count) : null,
+      costPrice: cost ? Number(cost) : null,
+      commissionOn: commOn, commissionPct: commOn && pct ? Number(pct) : null,
+      salePrice: sale ? Number(sale) : null,
+      price: sale ? Number(sale) : null,
+      notes: val('e_notes'), updatedAt: Date.now(),
+    });
+    await logIt('item.update', '#' + item.itemNumber);
+    state.itemMode = null;
+    return render();
+  }
+
+  if (what === 'create-client' || what === 'update-client') {
+    const f = {
+      name: val('f_name'), nickname: val('f_nick'), username: val('f_user'),
+      phone: val('f_phone'), notes: val('f_notes'),
+    };
+    if (!f.name.trim() && !f.nickname.trim()) return showError('أدخل الاسم أو الكنية على الأقل.');
+    if (!f.phone.trim()) return showError('رقم الهاتف مطلوب.');
+
+    if (what === 'create-client') {
+      const newId = uid();
+      await save('clients', { id: newId, ...clientFields(f), createdAt: Date.now() });
+      await logIt('client.create', f.name || f.nickname);
+      return go('/client/' + newId);
+    }
+    const old = await one('clients', state.editId);
+    await save('clients', { ...old, ...clientFields(f), updatedAt: Date.now() });
+    await logIt('client.update', f.name || f.nickname);
+    return go('/client/' + state.editId);
+  }
+
+  if (what === 'cancel-item') {
+    for (const k of ['1', '2']) if (state.images[k]) await del('images', state.images[k]);
+    state.images = { 1: null, 2: null };
+    return go('/items');
+  }
+
+  if (what === 'save-item') {
+    const ownerType = state.ownerType || 'client';
+    const owner = ownerType === 'store' ? null : state.owner;
+    const weight = Number(val('f_weight'));
+    const d1 = Number(val('f_d1')), d2 = Number(val('f_d2'));
+    const cost = val('f_cost').trim();
+    const pct = val('f_pct').trim();
+    const commOn = ownerType === 'client' && state.comm !== false;
+    if (ownerType === 'client' && !owner) return showError('اختر العميل الذي سلّم القطعة.');
+    if (commOn && !pct) return showError('أدخل نسبتك، أو أطفئ زر النسبة إن كنت لا تأخذ شيئًا.');
+    if (!val('f_weight') || Number.isNaN(weight)) return showError('أدخل وزنًا صحيحًا بالغرام.');
+    if (!val('f_d1') || !val('f_d2') || Number.isNaN(d1) || Number.isNaN(d2)) return showError('أدخل قياسَي الخرز بالمليمتر.');
+    if (!state.images[1] || !state.images[2]) return showError('الصورتان إلزاميتان قبل حفظ القطعة.');
+
+    btn.disabled = true;
+    const itemId = uid();
+    const number = await nextNumber();
+    const date = fromDateInput(val('f_date'));
+    const count = val('f_count').trim();
+
+    await save('items', {
+      id: itemId, itemNumber: number, type: val('f_type').trim(),
+      weightGrams: weight, beadDim1: d1, beadDim2: d2,
+      beadCount: count ? Number(count) : null,
+      imageIds: [state.images[1], state.images[2]],
+      ownerType, ownerClientId: owner, buyerClientId: null, status: 'مستلمة',
+      deliveryDate: date, saleDate: null, returnDate: null,
+      costPrice: cost ? Number(cost) : null, salePrice: null,
+      commissionOn: commOn, commissionPct: commOn ? Number(pct) : null,
+      notes: val('f_notes'), createdAt: Date.now(),
+    });
+    // قطع المتجر لا سجل تسليم لها، فلا عميل سلّمها
+    if (owner) {
+      await save('deliveries', {
+        id: uid(), itemId, itemNumber: number, clientId: owner, date,
+        weightGrams: weight, beadDim1: d1, beadDim2: d2, notes: val('f_notes'), createdAt: Date.now(),
+      });
+    }
+    await logIt('item.create', '#' + number);
+    state.images = { 1: null, 2: null };
+    return go('/item/' + itemId);
+  }
+
+  if (what === 'confirm-sale') {
+    const price = Number(val('f_price'));
+    if (!state.buyer) return showError('اختر المشتري.');
+    if (!val('f_price') || Number.isNaN(price)) return showError('أدخل سعرًا صحيحًا.');
+
+    btn.disabled = true;
+    const item = await one('items', id);
+    const date = fromDateInput(val('f_saledate'));
+    await save('sales', {
+      id: uid(), itemId: id, itemNumber: item.itemNumber, buyerClientId: state.buyer,
+      sellerClientId: item.ownerClientId || null, price, date, status: 'active',
+      notes: val('f_salenotes'), createdAt: Date.now(),
+    });
+    await save('items', {
+      ...item, buyerClientId: state.buyer, salePrice: price, price,
+      saleDate: date, status: 'مباعة',
+    });
+    await logIt('sale.create', '#' + item.itemNumber);
+    state.itemMode = null;
+    return render();
+  }
+
+  if (what === 'confirm-return') {
+    btn.disabled = true;
+    const item = await one('items', id);
+    const sales = await all('sales');
+    const active = sales.find((s) => s.itemId === id && s.status === 'active');
+    if (active) await save('sales', { ...active, status: 'cancelled', cancelledAt: Date.now() });
+
+    const date = fromDateInput(val('f_retdate'));
+    await save('returns', {
+      id: uid(), itemId: id, itemNumber: item.itemNumber,
+      buyerClientId: item.buyerClientId, ownerClientId: item.ownerClientId,
+      returnDate: date, reason: val('f_reason'), buyerNote: val('f_buyernote'), createdAt: Date.now(),
+    });
+    await save('items', {
+      ...item, buyerClientId: null, salePrice: null, price: null, saleDate: null,
+      returnDate: date, status: 'مسترجعة',
+    });
+    await logIt('return.create', '#' + item.itemNumber);
+    state.itemMode = null;
+    return render();
+  }
+
+  if (what === 'confirm-delete') {
+    btn.disabled = true;
+    await removeItem(id);
+    state.itemMode = null;
+    return go('/items');
+  }
+
+  if (what === 'export') {
+    btn.disabled = true;
+    try { await exportAll(); state.backupMsg = 'نُزّلت النسخة إلى مجلد التنزيلات.'; }
+    catch { state.backupMsg = 'تعذّر إنشاء النسخة.'; }
+    return render();
+  }
+
+  if (what === 'import') return document.getElementById('importFile').click();
+}
+
+/* ---------- الإقلاع ---------- */
+
+window.addEventListener('beforeunload', (e) => {
+  if (state.images && (state.images[1] || state.images[2])) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+
+window.addEventListener('hashchange', () => {
+  const route = location.hash.replace(/^#\/?/, '').split('/')[0];
+  if (route !== 'clients') state.clientTerm = '';
+  if (route !== 'client') state.clientTab = 'info';
+  if (route !== 'item') state.itemMode = null;
+  render();
+});
+
+(async function boot() {
+  try {
+    _db = await openDB();
+  } catch (e) {
+    root.innerHTML = '<div class="boot"><h2 class="page">تعذّر فتح مخزن البيانات</h2>' +
+      '<div class="notice err">المتصفح منع النظام من حفظ البيانات. يحدث هذا غالبًا عند فتح الملف مباشرة في Chrome، لأنه يمنع التخزين لملفات الجهاز.</div>' +
+      '<div class="notice" style="margin-top:14px"><b>الحلول، من الأسهل:</b>' +
+      '<p style="margin-top:8px">١ — افتح الملف بمتصفح Safari، فهو يسمح بذلك.</p>' +
+      '<p>٢ — أو انقل الملف إلى مجلد وشغّل فيه خادمًا بسيطًا من الطرفية:<br>' +
+      '<code class="num">python3 -m http.server 8000</code><br>ثم افتح <code class="num">localhost:8000</code></p>' +
+      '<p>٣ — أو تصفّح من الجوال بعد وضع الملف على iCloud أو ما شابه.</p></div>' +
+      '<p class="muted" style="margin-top:14px">التفاصيل التقنية: ' + esc(e.message) + '</p></div>';
+    return;
+  }
+  render();
+})();
+</script>
+</body>
+</html>
